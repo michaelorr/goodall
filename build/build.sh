@@ -35,6 +35,12 @@ if [ -z "${OS}" ]; then
     exit 1
 fi
 
+if [ ${OS} == "windows" ]; then
+    export BIN_EXT=".exe"
+else
+    export BIN_EXT=""
+fi
+
 export CGO_ENABLED=0
 export GOARCH="${ARCH}"
 export GOOS="${OS}"
@@ -43,10 +49,10 @@ go build                                                           \
     -installsuffix "static"                                        \
     -ldflags "-X ${PKG}/pkg/version.VERSION=${VERSION}"            \
     cmd/client/main.go
-mv ./main ./bin/${OS}_${ARCH}/goodall-client
+mv ./main${BIN_EXT} ./bin/${OS}_${ARCH}/goodall-client${BIN_EXT}
 
 go build                                                           \
     -installsuffix "static"                                        \
     -ldflags "-X ${PKG}/pkg/version.VERSION=${VERSION}"            \
     cmd/server/main.go
-mv ./main ./bin/${OS}_${ARCH}/goodall-server
+mv ./main${BIN_EXT} ./bin/${OS}_${ARCH}/goodall-server${BIN_EXT}

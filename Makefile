@@ -24,7 +24,8 @@ REGISTRY ?= michaelorr
 # Which architecture to build - see $(ALL_ARCH) for options.
 ARCH ?= amd64
 
-# Which OS to target when building. Common choices are `darwin` and `linux`.
+# Which OS to target when building.
+# Common choices are `darwin`, `linux` or `windows`.
 # Complete list of options: https://golang.org/doc/install/source#environment
 OS ?= darwin
 
