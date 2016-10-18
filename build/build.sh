@@ -30,11 +30,23 @@ if [ -z "${VERSION}" ]; then
     echo "VERSION must be set"
     exit 1
 fi
+if [ -z "${OS}" ]; then
+    echo "OS must be set"
+    exit 1
+fi
 
 export CGO_ENABLED=0
 export GOARCH="${ARCH}"
+export GOOS="${OS}"
 
-go install                                                         \
+go build                                                           \
     -installsuffix "static"                                        \
     -ldflags "-X ${PKG}/pkg/version.VERSION=${VERSION}"            \
-    ./...
+    cmd/client/main.go
+mv ./main ./bin/${OS}_${ARCH}/goodall-client
+
+go build                                                           \
+    -installsuffix "static"                                        \
+    -ldflags "-X ${PKG}/pkg/version.VERSION=${VERSION}"            \
+    cmd/server/main.go
+mv ./main ./bin/${OS}_${ARCH}/goodall-server

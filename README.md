@@ -1,25 +1,6 @@
-# Go app template build environment
-
-This is a skeleton project for a Go application, which captures the best build
-techniques I have learned to date.  It uses a Makefile to drive the build (the
-universal API to software projects) and a Dockerfile to build a docker image.
+# Metrics gathering and reporting
 
 This has only been tested on Linux, and depends on Docker to build.
-
-## Customizing it
-
-To use this, simply copy these files and make the following changes:
-
-Makefile:
-   - change `BIN` to your binary name
-   - change `PKG` to the Go import path of this repo
-   - change `REGISTRY` to the Docker registry you want to use
-   - maybe change `SRC_DIRS` if you use some other layout
-   - choose a strategy for `VERSION` values - git tags or manual
-
-Dockerfile.in:
-   - change the `MAINTAINER` to you
-   - maybe change or remove the `USER` if you need
 
 ## Building
 
