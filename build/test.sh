@@ -24,7 +24,7 @@ TARGETS=$(for d in "$@"; do echo ./$d/...; done)
 
 echo "Running tests:"
 go test -i -installsuffix "static" ${TARGETS}
-go test -installsuffix "static" ${TARGETS}
+go test ${VERBOSE} -installsuffix "static" ${TARGETS}
 echo
 
 echo -n "Checking gofmt: "

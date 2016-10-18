@@ -76,6 +76,9 @@ bin/$(OS)_$(ARCH)/$(BIN): build-dirs
 version:
 	@echo $(VERSION)
 
+test-verbose:
+	@$(MAKE) --no-print-directory VERBOSE="-v" test
+
 test: build-dirs
 	@docker run                                                            \
 		-ti                                                                \
@@ -87,6 +90,7 @@ test: build-dirs
 		-w /go/src/$(PKG)                                                  \
 		$(BUILD_IMAGE)                                                     \
 		/bin/sh -c "                                                       \
+			VERBOSE=$(VERBOSE)											   \
 			./build/test.sh $(SRC_DIRS)                                    \
 		"
 
