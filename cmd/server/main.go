@@ -1,9 +1,10 @@
 package main
 
-import "log"
-import "github.com/michaelorr/goodall/pkg/version"
+import (
+	"os"
+	"github.com/michaelorr/goodall/pkg/server"
+)
 
 func main() {
-	log.Println(version.VERSION)
-	log.Println("Inside the server")
+	os.Exit(server.Run())
 }
