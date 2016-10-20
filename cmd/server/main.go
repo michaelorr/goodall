@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+
 	"github.com/michaelorr/goodall/pkg/server"
 )
 
