@@ -1,6 +1,7 @@
 package client
 
 import (
+	"sync"
 	"time"
 
 	"github.com/michaelorr/goodall/pkg/db"
@@ -23,16 +24,31 @@ func Run() int {
 }
 
 func GatherMetrics(response chan int) {
+	var results chan *metrics.DataPoint
+	var wg sync.WaitGroup
+
 	for {
+		results = make(chan *metrics.DataPoint, len(metrics.BucketMap))
+
+		// spin off goroutines to fetch each metric
 		for bucket, fetch_metric := range metrics.BucketMap {
-			// TODO do this fetching in goroutines
-			val := fetch_metric()
-			// TODO: clean this up
-			_ = bucket
-			_ = val
-			// store in db
+			wg.Add(1)
+			go fetch_metric(bucket, results)
 		}
+
+		// wait until all metrics goroutines complete before continuing
+		go func() {
+			wg.Wait()
+			close(results)
+		}()
+
+		// gather the results
+		for result := range results {
+			// TODO write the result to the DB
+			_ = result
+			wg.Done()
+		}
+
 		time.Sleep(metrics.Interval)
 	}
-	response <- 0
 }

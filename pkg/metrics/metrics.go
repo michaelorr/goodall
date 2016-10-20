@@ -2,42 +2,49 @@ package metrics
 
 import "time"
 
-const Interval time.Duration = 1 * time.Second
+const Interval time.Duration = 1 * time.Millisecond
 
-var BucketMap map[string]func() float64 = map[string]func() float64{
-	"cpu_usage":       CPU,
-	"io_wait":         IOwait,
-	"memory":          Memory,
-	"network_traffic": Network,
-	"system_load_1":   Load1,
-	"system_load_15":  Load15,
-	"system_load_5":   Load5,
+type DataPoint struct {
+	BucketName string
+	Value      float64
 }
 
-func CPU() float64 {
-	return 0
+type metric_f func(string, chan *DataPoint)
+
+var BucketMap map[string]metric_f = map[string]metric_f{
+	"cpu_usage":       cpu,
+	"io_wait":         iowait,
+	"memory":          memory,
+	"network_traffic": network,
+	"system_load_1":   load1,
+	"system_load_15":  load15,
+	"system_load_5":   load5,
 }
 
-func IOwait() float64 {
-	return 1
+func cpu(bucket string, result chan *DataPoint) {
+	result <- &DataPoint{bucket, 0}
 }
 
-func Memory() float64 {
-	return 2
+func iowait(bucket string, result chan *DataPoint) {
+	result <- &DataPoint{bucket, 1}
 }
 
-func Network() float64 {
-	return 3
+func memory(bucket string, result chan *DataPoint) {
+	result <- &DataPoint{bucket, 2}
 }
 
-func Load1() float64 {
-	return 4
+func network(bucket string, result chan *DataPoint) {
+	result <- &DataPoint{bucket, 3}
 }
 
-func Load15() float64 {
-	return 5
+func load1(bucket string, result chan *DataPoint) {
+	result <- &DataPoint{bucket, 4}
 }
 
-func Load5() float64 {
-	return 6
+func load15(bucket string, result chan *DataPoint) {
+	result <- &DataPoint{bucket, 5}
+}
+
+func load5(bucket string, result chan *DataPoint) {
+	result <- &DataPoint{bucket, 6}
 }
