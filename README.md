@@ -22,6 +22,15 @@ the tests on any OS/Architecture that is supported by Go, but you will need the
 Go runtime and environment setup to do so. See https://golang.org/doc/install
 for more information on how to get started.
 
+## Adding new Metrics
+
+Add an entry to BucketMap in `pkg/metrics/metrics.go`. This map is of the form
+`"key": value` where `key` is a string and `value` is a function with that
+takes no arguments and returns a float64. This function should be exported from
+the metrics package so that it can be called from the main logic. The return
+value is the metric that will be stored in the database. This method will be
+called every metrics.Interval which is an instance of time.Duration.
+
 ## Notes
 
 * Only the amd64 arch for darwin and linux OSs have been fully tested.
@@ -39,17 +48,28 @@ for more information on how to get started.
 
 * TODO
 
+## CLI Params
+
+// TODO
+Interval
+DB filename
+
 ## Wishlist
 
 If I were going to operationalize this service as it is structured, there are
 several things that are glossed over here. I would separate the gathering and
 reporting responsibilties into separate binaries to allow for more granular
 control over deployments. This would prevent the two processes from
-communicating via the DB (realistically they shouldn't be  anyways), this means
-that either a JSON or (more likely) a gRPC interface would be established
-allowing the two processes to run on different hosts. This would also allow
-this service to scale horizontally for metrics gathering across a cluster or
-multiple reporters behind a load balancer to handle higher load.
+communicating via the DB (realistically they shouldn't be doing this anyways),
+this means that either a JSON or (more likely) a gRPC interface would be
+established allowing the two processes to run on different hosts. This would
+also allow this service to scale horizontally for metrics gathering across a
+cluster or multiple reporters behind a load balancer to handle higher load.
+
+There are also a lot of places where this service could hard-crash. That's not
+ideal. I would want to wrap these places in some sort of retry logic,
+potentially with an intelligent back-off that logs or alerts what is happening
+or going wrong, but does not bring the service to it's knees.
 
 Realistically, I would use a time series DB which is more geared to storing and
 querying this type of data. InfluxDB is well suited to this problem space but
