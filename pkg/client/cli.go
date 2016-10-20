@@ -10,7 +10,7 @@ func Run() int {
 		// TODO log
 		return 1
 	}
-	err = db.Init()
+	err = db.Init(conn)
 	if err != nil {
 		// TODO log
 		return 2
@@ -21,6 +21,7 @@ func Run() int {
 	// TODO
 	// select response
 	// return that value
+	return 0
 }
 
 func GatherMetrics(killed chan int) {
