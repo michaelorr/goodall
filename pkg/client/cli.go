@@ -4,6 +4,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/boltdb/bolt"
+
 	"github.com/michaelorr/goodall/pkg/db"
 	"github.com/michaelorr/goodall/pkg/metrics"
 )
@@ -19,16 +21,23 @@ func Run() int {
 	}
 
 	response := make(chan int)
-	go GatherMetrics(response)
+	go GatherMetrics(conn, response)
+	go CleanupMetrics()
 	return <-response
 }
 
-func GatherMetrics(response chan int) {
-	var results chan *metrics.DataPoint
-	var wg sync.WaitGroup
-
+func CleanupMetrics() {
 	for {
-		results = make(chan *metrics.DataPoint, len(metrics.BucketMap))
+		// TODO remove any db entry older than X
+		time.Sleep(metrics.Interval)
+	}
+}
+
+func GatherMetrics(conn *bolt.DB, response chan int) {
+	for {
+		var wg sync.WaitGroup
+		now := time.Now().Format(time.RFC3339)
+		results := make(chan *metrics.DataPoint, len(metrics.BucketMap))
 
 		// spin off goroutines to fetch each metric
 		for bucket, fetch_metric := range metrics.BucketMap {
@@ -44,8 +53,20 @@ func GatherMetrics(response chan int) {
 
 		// gather the results
 		for result := range results {
-			// TODO write the result to the DB
-			_ = result
+			// TODO do this in a separate goroutine in the connection package
+			err := conn.Update(func(tx *bolt.Tx) error {
+				b := tx.Bucket([]byte(result.BucketName))
+				if b == nil {
+					// TODO Bucket does not exist
+				}
+				val, err := db.Ftob(result.Value)
+				// TODO error checking
+				err = b.Put([]byte(now), val)
+				return err
+			})
+			// TODO error checking
+			_ = err
+
 			wg.Done()
 		}
 

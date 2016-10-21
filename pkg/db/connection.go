@@ -1,6 +1,8 @@
 package db
 
 import (
+	"bytes"
+	"encoding/binary"
 	"time"
 
 	"github.com/boltdb/bolt"
@@ -23,4 +25,23 @@ func Init(conn *bolt.DB) error {
 		}
 	}
 	return nil
+}
+
+func Ftob(f float64) ([]byte, error) {
+	buf := new(bytes.Buffer)
+	err := binary.Write(buf, binary.BigEndian, f)
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+
+func Btof(b []byte) (float64, error) {
+	var f float64
+	buf := bytes.NewReader(b)
+	err := binary.Read(buf, binary.BigEndian, &f)
+	if err != nil {
+		return nil, err
+	}
+	return f, nil
 }
