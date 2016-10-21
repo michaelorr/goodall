@@ -39,7 +39,7 @@ func CleanupMetrics(conn *bolt.DB) {
 				// TODO
 				// Extract this to a better location
 				// Make this configurable
-				max := []byte(time.Now().Add(-1 * time.Minute).Format(time.RFC3339))
+				max := []byte(time.Now().UTC().Add(-1 * time.Minute).Format(time.RFC3339))
 
 				for k, _ := c.Seek(min); k != nil && bytes.Compare(k, max) <= 0; k, _ = c.Next() {
 					err := b.Delete(k)
@@ -58,7 +58,7 @@ func CleanupMetrics(conn *bolt.DB) {
 func GatherMetrics(conn *bolt.DB, response chan int) {
 	for {
 		var wg sync.WaitGroup
-		now := time.Now().Format(time.RFC3339)
+		now := time.Now().UTC().Format(time.RFC3339)
 		results := make(chan *metrics.DataPoint, len(metrics.BucketMap))
 
 		// spin off goroutines to fetch each metric
