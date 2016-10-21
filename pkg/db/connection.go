@@ -41,7 +41,7 @@ func Btof(b []byte) (float64, error) {
 	buf := bytes.NewReader(b)
 	err := binary.Read(buf, binary.BigEndian, &f)
 	if err != nil {
-		return nil, err
+		return f, err
 	}
 	return f, nil
 }

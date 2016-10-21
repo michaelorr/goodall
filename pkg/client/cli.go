@@ -1,6 +1,7 @@
 package client
 
 import (
+	"bytes"
 	"sync"
 	"time"
 
@@ -22,13 +23,34 @@ func Run() int {
 
 	response := make(chan int)
 	go GatherMetrics(conn, response)
-	go CleanupMetrics()
+	go CleanupMetrics(conn)
 	return <-response
 }
 
-func CleanupMetrics() {
+func CleanupMetrics(conn *bolt.DB) {
 	for {
-		// TODO remove any db entry older than X
+		conn.Update(func(tx *bolt.Tx) error {
+			return tx.ForEach(func(name []byte, b *bolt.Bucket) error{
+				c := b.Cursor()
+
+				// TODO
+				// Extract this to a better location
+				min := []byte("2016-01-01T00:00:00Z")
+				// TODO
+				// Extract this to a better location
+				// Make this configurable
+				max := []byte(time.Now().Add(-1 * time.Minute).Format(time.RFC3339))
+
+				for k, _ := c.Seek(min); k != nil && bytes.Compare(k, max) <= 0; k, _ = c.Next() {
+					err := b.Delete(k)
+					if err != nil {
+						return err
+					}
+				}
+				return nil
+			})
+		})
+
 		time.Sleep(metrics.Interval)
 	}
 }
