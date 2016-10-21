@@ -11,14 +11,10 @@ import (
 	"github.com/michaelorr/goodall/pkg/metrics"
 )
 
-var (
-	cleanup_min = []byte("2016-01-01T00:00:00Z")
-	// TODO make this parameterized
-	cleanup_max = []byte(time.Now().UTC().Add(-1 * 1 * time.Minute).Format(time.RFC3339))
-)
+var cleanupKeyMin = []byte("2016-01-01T00:00:00Z")
 
-func Run() int {
-	conn, err := db.Open()
+func Run(metricInterval, retentionPeriod time.Duration, path string) int {
+	conn, err := db.Open(path)
 	if err != nil {
 		return 1
 	}
@@ -28,18 +24,20 @@ func Run() int {
 	}
 
 	response := make(chan int)
-	go GatherMetrics(conn, response)
-	go CleanupMetrics(conn)
+	go GatherMetrics(conn, response, metricInterval)
+	go CleanupMetrics(conn, metricInterval, retentionPeriod)
 	return <-response
 }
 
-func CleanupMetrics(conn *bolt.DB) {
+func CleanupMetrics(conn *bolt.DB, metricInterval, retentionPeriod time.Duration) {
 	for {
+		cleanupKeyMax := []byte(time.Now().UTC().Add(-retentionPeriod).Format("2006-01-02T15:04:05.999"))
+
 		conn.Update(func(tx *bolt.Tx) error {
 			return tx.ForEach(func(name []byte, b *bolt.Bucket) error {
 				c := b.Cursor()
 
-				for k, _ := c.Seek(cleanup_min); k != nil && bytes.Compare(k, cleanup_max) <= 0; k, _ = c.Next() {
+				for k, _ := c.Seek(cleanupKeyMin); k != nil && bytes.Compare(k, cleanupKeyMax) <= 0; k, _ = c.Next() {
 					err := b.Delete(k)
 					if err != nil {
 						return err
@@ -49,21 +47,21 @@ func CleanupMetrics(conn *bolt.DB) {
 			})
 		})
 
-		time.Sleep(metrics.Interval)
+		time.Sleep(metricInterval)
 	}
 }
 
-func GatherMetrics(conn *bolt.DB, response chan int) {
+func GatherMetrics(conn *bolt.DB, response chan int, metricInterval time.Duration) {
 	for {
 		var wg sync.WaitGroup
-		now := time.Now().UTC().Format(time.RFC3339)
+		now := time.Now().UTC().Format("2006-01-02T15:04:05.999")
 		results := make(chan *metrics.DataPoint, len(metrics.BucketMap))
 		errors := make(chan error)
 
 		// spin off goroutines to fetch each metric
-		for bucket, fetch_metric := range metrics.BucketMap {
+		for bucket, fetchMetric := range metrics.BucketMap {
 			wg.Add(1)
-			go fetch_metric(bucket, results, errors)
+			go fetchMetric(bucket, results, errors)
 		}
 
 		// TODO handle errors from metrics gathering
@@ -93,6 +91,6 @@ func GatherMetrics(conn *bolt.DB, response chan int) {
 			wg.Done()
 		}
 
-		time.Sleep(metrics.Interval)
+		time.Sleep(metricInterval)
 	}
 }

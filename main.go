@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	"github.com/michaelorr/goodall/pkg/agent"
+	"github.com/michaelorr/goodall/pkg/cli"
 )
 
 func main() {
-	os.Exit(agent.Run())
+	os.Exit(cli.Run())
 }

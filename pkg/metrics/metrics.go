@@ -1,29 +1,25 @@
 package metrics
 
 import (
-	"time"
-
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
 )
-
-const Interval time.Duration = 1 * time.Millisecond
 
 type DataPoint struct {
 	BucketName string
 	Value      float64
 }
 
-type metric_f func(string, chan *DataPoint, chan error)
+type metricF func(string, chan *DataPoint, chan error)
 
-var BucketMap map[string]metric_f = map[string]metric_f{
-	"disk_used":      disk_used,
-	"disk_free":      disk_free,
-	"disk_total":     disk_total,
-	"mem_used":       mem_used,
-	"mem_available":  mem_available,
-	"mem_total":      mem_total,
+var BucketMap map[string]metricF = map[string]metricF{
+	"disk_used":      diskUsed,
+	"disk_free":      diskFree,
+	"disk_total":     diskTotal,
+	"mem_used":       memUsed,
+	"mem_available":  memAvailable,
+	"mem_total":      memTotal,
 	"system_load_1":  load1,
 	"system_load_15": load15,
 	"system_load_5":  load5,
@@ -33,7 +29,7 @@ var BucketMap map[string]metric_f = map[string]metric_f{
 // The repeated code below is begging to be ripped into a single helper func
 /////////
 
-func disk_used(bucket string, result chan *DataPoint, errors chan error) {
+func diskUsed(bucket string, result chan *DataPoint, errors chan error) {
 	if stat, err := disk.Usage("/"); err != nil {
 		errors <- err
 	} else {
@@ -41,7 +37,7 @@ func disk_used(bucket string, result chan *DataPoint, errors chan error) {
 	}
 }
 
-func disk_free(bucket string, result chan *DataPoint, errors chan error) {
+func diskFree(bucket string, result chan *DataPoint, errors chan error) {
 	if stat, err := disk.Usage("/"); err != nil {
 		errors <- err
 	} else {
@@ -49,7 +45,7 @@ func disk_free(bucket string, result chan *DataPoint, errors chan error) {
 	}
 }
 
-func disk_total(bucket string, result chan *DataPoint, errors chan error) {
+func diskTotal(bucket string, result chan *DataPoint, errors chan error) {
 	if stat, err := disk.Usage("/"); err != nil {
 		errors <- err
 	} else {
@@ -57,7 +53,7 @@ func disk_total(bucket string, result chan *DataPoint, errors chan error) {
 	}
 }
 
-func mem_used(bucket string, result chan *DataPoint, errors chan error) {
+func memUsed(bucket string, result chan *DataPoint, errors chan error) {
 	if stat, err := mem.VirtualMemory(); err != nil {
 		errors <- err
 	} else {
@@ -65,7 +61,7 @@ func mem_used(bucket string, result chan *DataPoint, errors chan error) {
 	}
 }
 
-func mem_available(bucket string, result chan *DataPoint, errors chan error) {
+func memAvailable(bucket string, result chan *DataPoint, errors chan error) {
 	if stat, err := mem.VirtualMemory(); err != nil {
 		errors <- err
 	} else {
@@ -73,7 +69,7 @@ func mem_available(bucket string, result chan *DataPoint, errors chan error) {
 	}
 }
 
-func mem_total(bucket string, result chan *DataPoint, errors chan error) {
+func memTotal(bucket string, result chan *DataPoint, errors chan error) {
 	if stat, err := mem.VirtualMemory(); err != nil {
 		errors <- err
 	} else {

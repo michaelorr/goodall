@@ -10,8 +10,8 @@ import (
 	"github.com/michaelorr/goodall/pkg/metrics"
 )
 
-func Open() (*bolt.DB, error) {
-	return bolt.Open("goodall.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
+func Open(path string) (*bolt.DB, error) {
+	return bolt.Open(path, 0600, &bolt.Options{Timeout: 1 * time.Second})
 }
 
 func Init(conn *bolt.DB) error {
