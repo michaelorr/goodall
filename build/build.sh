@@ -48,11 +48,5 @@ export GOOS="${OS}"
 go build                                                           \
     -installsuffix "static"                                        \
     -ldflags "-X ${PKG}/pkg/version.VERSION=${VERSION}"            \
-    cmd/client/main.go
-mv ./main${BIN_EXT} ./bin/${OS}_${ARCH}/goodall-client${BIN_EXT}
-
-go build                                                           \
-    -installsuffix "static"                                        \
-    -ldflags "-X ${PKG}/pkg/version.VERSION=${VERSION}"            \
-    cmd/server/main.go
-mv ./main${BIN_EXT} ./bin/${OS}_${ARCH}/goodall-server${BIN_EXT}
+    main.go
+mv ./main${BIN_EXT} ./bin/${OS}_${ARCH}/goodall${BIN_EXT}
