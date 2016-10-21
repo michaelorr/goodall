@@ -11,6 +11,11 @@ import (
 	"github.com/michaelorr/goodall/pkg/metrics"
 )
 
+var (
+	cleanup_min = []byte("2016-01-01T00:00:00Z")
+	cleanup_max = []byte(time.Now().UTC().Add(-1 * 1 * time.Minute).Format(time.RFC3339))
+)
+
 func Run() int {
 	conn, err := db.Open()
 	if err != nil {
@@ -33,15 +38,7 @@ func CleanupMetrics(conn *bolt.DB) {
 			return tx.ForEach(func(name []byte, b *bolt.Bucket) error {
 				c := b.Cursor()
 
-				// TODO
-				// Extract this to a better location
-				min := []byte("2016-01-01T00:00:00Z")
-				// TODO
-				// Extract this to a better location
-				// Make this configurable
-				max := []byte(time.Now().UTC().Add(-1 * time.Minute).Format(time.RFC3339))
-
-				for k, _ := c.Seek(min); k != nil && bytes.Compare(k, max) <= 0; k, _ = c.Next() {
+				for k, _ := c.Seek(cleanup_min); k != nil && bytes.Compare(k, cleanup_max) <= 0; k, _ = c.Next() {
 					err := b.Delete(k)
 					if err != nil {
 						return err
