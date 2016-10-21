@@ -30,7 +30,7 @@ func Run() int {
 func CleanupMetrics(conn *bolt.DB) {
 	for {
 		conn.Update(func(tx *bolt.Tx) error {
-			return tx.ForEach(func(name []byte, b *bolt.Bucket) error{
+			return tx.ForEach(func(name []byte, b *bolt.Bucket) error {
 				c := b.Cursor()
 
 				// TODO
