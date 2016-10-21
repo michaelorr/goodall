@@ -35,7 +35,7 @@ for more information on how to get started.
 To add a new metric, add an entry to BucketMap in `pkg/metrics/metrics.go`.
 This map is of the form `"key": value` where `key` is a string and `value` is a
 function that takes two arguments, a string and chan of type
-`*metrics.DataPoint`. The function should send along the channel a pointer to
+`\*metrics.DataPoint`. The function should send along the channel a pointer to
 an instance of metrics.Datapoint which contains the BucketName that was passed
 in and the result value that should be stored in the db. This method will be
 called every metrics.Interval which is an instance of time.Duration.
@@ -59,10 +59,10 @@ called every metrics.Interval which is an instance of time.Duration.
 
 ## CLI Params
 
-// TODO
-Interval
-DB filename
-Data Cleanup
+* TODO
+* Interval
+* DB filename
+* Data Cleanup
 
 ## Wishlist
 
