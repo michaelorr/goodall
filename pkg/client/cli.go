@@ -58,12 +58,15 @@ func GatherMetrics(conn *bolt.DB, response chan int) {
 		var wg sync.WaitGroup
 		now := time.Now().UTC().Format(time.RFC3339)
 		results := make(chan *metrics.DataPoint, len(metrics.BucketMap))
+		errors := make(chan error)
 
 		// spin off goroutines to fetch each metric
 		for bucket, fetch_metric := range metrics.BucketMap {
 			wg.Add(1)
-			go fetch_metric(bucket, results)
+			go fetch_metric(bucket, results, errors)
 		}
+
+		// TODO handle errors from metrics gathering
 
 		// wait until all metrics goroutines complete before continuing
 		go func() {

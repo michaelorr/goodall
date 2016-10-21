@@ -1,6 +1,12 @@
 package metrics
 
-import "time"
+import (
+	"time"
+
+	"github.com/shirou/gopsutil/disk"
+	"github.com/shirou/gopsutil/load"
+	"github.com/shirou/gopsutil/mem"
+)
 
 const Interval time.Duration = 1 * time.Millisecond
 
@@ -9,42 +15,92 @@ type DataPoint struct {
 	Value      float64
 }
 
-type metric_f func(string, chan *DataPoint)
+type metric_f func(string, chan *DataPoint, chan error)
 
 var BucketMap map[string]metric_f = map[string]metric_f{
-	"cpu_usage":       cpu,
-	"io_wait":         iowait,
-	"memory":          memory,
-	"network_traffic": network,
-	"system_load_1":   load1,
-	"system_load_15":  load15,
-	"system_load_5":   load5,
+	"disk_used":      disk_used,
+	"disk_free":      disk_free,
+	"disk_total":     disk_total,
+	"mem_used":       mem_used,
+	"mem_available":  mem_available,
+	"mem_total":      mem_total,
+	"system_load_1":  load1,
+	"system_load_15": load15,
+	"system_load_5":  load5,
 }
 
-func cpu(bucket string, result chan *DataPoint) {
-	result <- &DataPoint{bucket, 0}
+//////////
+// The repeated code below is begging to be ripped into a single helper func
+/////////
+
+func disk_used(bucket string, result chan *DataPoint, errors chan error) {
+	if stat, err := disk.Usage("/"); err != nil {
+		errors <- err
+	} else {
+		result <- &DataPoint{bucket, float64(stat.Used)}
+	}
 }
 
-func iowait(bucket string, result chan *DataPoint) {
-	result <- &DataPoint{bucket, 1}
+func disk_free(bucket string, result chan *DataPoint, errors chan error) {
+	if stat, err := disk.Usage("/"); err != nil {
+		errors <- err
+	} else {
+		result <- &DataPoint{bucket, float64(stat.Free)}
+	}
 }
 
-func memory(bucket string, result chan *DataPoint) {
-	result <- &DataPoint{bucket, 2}
+func disk_total(bucket string, result chan *DataPoint, errors chan error) {
+	if stat, err := disk.Usage("/"); err != nil {
+		errors <- err
+	} else {
+		result <- &DataPoint{bucket, float64(stat.Total)}
+	}
 }
 
-func network(bucket string, result chan *DataPoint) {
-	result <- &DataPoint{bucket, 3}
+func mem_used(bucket string, result chan *DataPoint, errors chan error) {
+	if stat, err := mem.VirtualMemory(); err != nil {
+		errors <- err
+	} else {
+		result <- &DataPoint{bucket, float64(stat.Used)}
+	}
 }
 
-func load1(bucket string, result chan *DataPoint) {
-	result <- &DataPoint{bucket, 4}
+func mem_available(bucket string, result chan *DataPoint, errors chan error) {
+	if stat, err := mem.VirtualMemory(); err != nil {
+		errors <- err
+	} else {
+		result <- &DataPoint{bucket, float64(stat.Available)}
+	}
 }
 
-func load15(bucket string, result chan *DataPoint) {
-	result <- &DataPoint{bucket, 5}
+func mem_total(bucket string, result chan *DataPoint, errors chan error) {
+	if stat, err := mem.VirtualMemory(); err != nil {
+		errors <- err
+	} else {
+		result <- &DataPoint{bucket, float64(stat.Total)}
+	}
 }
 
-func load5(bucket string, result chan *DataPoint) {
-	result <- &DataPoint{bucket, 6}
+func load1(bucket string, result chan *DataPoint, errors chan error) {
+	if stat, err := load.Avg(); err != nil {
+		errors <- err
+	} else {
+		result <- &DataPoint{bucket, stat.Load15}
+	}
+}
+
+func load15(bucket string, result chan *DataPoint, errors chan error) {
+	if stat, err := load.Avg(); err != nil {
+		errors <- err
+	} else {
+		result <- &DataPoint{bucket, stat.Load1}
+	}
+}
+
+func load5(bucket string, result chan *DataPoint, errors chan error) {
+	if stat, err := load.Avg(); err != nil {
+		errors <- err
+	} else {
+		result <- &DataPoint{bucket, stat.Load5}
+	}
 }
