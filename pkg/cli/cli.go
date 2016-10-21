@@ -8,7 +8,6 @@ type Config struct {
 	DBPath           string
 }
 
-
 func parseArgs() *Config {
 	// TODO pull from command line to parametrize
 	return &Config{

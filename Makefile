@@ -22,7 +22,7 @@ PKG := github.com/michaelorr/goodall
 ARCH ?= amd64
 
 # Which OS to target when building.
-# Common choices are `darwin`, `linux` or `windows`.
+# Common choices are `darwin` or `linux`.
 # Complete list of options: https://golang.org/doc/install/source#environment
 OS ?= darwin
 

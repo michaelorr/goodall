@@ -7,6 +7,19 @@
 
 # Metrics gathering and reporting
 
+## What is this?
+
+TODO
+
+## Naming things is hard
+
+The name is derived from Jane Goodall, famed primatologist and anthropologist
+who became famous for her 55 year observational study of chimpanzees in
+Tanzania. Also, there is a trend of incorporting the letters `Go` in Go based
+projects ;-)
+
+> https://www.wikiwand.com/en/Jane_Goodall
+
 ## Building
 
 Run `make` or `make build` to compile your app.  This will use a Docker image
@@ -47,9 +60,9 @@ metrics that can be easily added.
 
 ## Notes
 
-* Only the amd64 arch for darwin and linux OSs have been fully tested.
-* Other OSs and ARCHs build successfully but have not been tested.
-* darwin/arm fails to build. I do not fully understand why at this time.
+* Only the amd64/darwin and amd64/linux have been tested.
+* Other OSs and ARCHs may build successfully but have not been tested and
+likely do not work fully due to lack of gopsutil support on Windows.
 
 ## Error Response Codes
 
@@ -68,6 +81,16 @@ metrics that can be easily added.
 * Interval
 * DB filename
 * Data Cleanup
+
+## Resource Utilization
+
+If this tool is intended to monitor resources, it shouldn't be resource heavy
+itself. I've measured steady state usage with default configuration (gather
+metrics every 1s, store for 4h). Disk utilization by the database is roughly
+25M with steady state usage of 6-7M resident memory while CPU utilization
+remains reasonably low. If the metric interval is increased to 1ms, the disk
+utilization will naturally increase dramatically as will CPU utilization, but
+overall resident memory usage will remain quite stable.
 
 ## Wishlist
 

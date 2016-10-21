@@ -35,12 +35,6 @@ if [ -z "${OS}" ]; then
     exit 1
 fi
 
-if [ ${OS} == "windows" ]; then
-    export BIN_EXT=".exe"
-else
-    export BIN_EXT=""
-fi
-
 export CGO_ENABLED=0
 export GOARCH="${ARCH}"
 export GOOS="${OS}"
@@ -49,4 +43,4 @@ go build                                                           \
     -installsuffix "static"                                        \
     -ldflags "-X ${PKG}/pkg/version.VERSION=${VERSION}"            \
     main.go
-mv ./main${BIN_EXT} ./bin/${OS}_${ARCH}/goodall${BIN_EXT}
+mv ./main ./bin/${OS}_${ARCH}/goodall
