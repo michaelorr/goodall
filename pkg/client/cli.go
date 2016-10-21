@@ -13,6 +13,7 @@ import (
 
 var (
 	cleanup_min = []byte("2016-01-01T00:00:00Z")
+	// TODO make this parameterized
 	cleanup_max = []byte(time.Now().UTC().Add(-1 * 1 * time.Minute).Format(time.RFC3339))
 )
 
