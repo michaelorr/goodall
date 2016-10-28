@@ -2,6 +2,7 @@ package agent
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -78,18 +79,20 @@ func GatherMetrics(conn *bolt.DB, response chan int, metricInterval time.Duratio
 		// gather the results
 		for result := range results {
 			// TODO do this in a separate goroutine in the connection package
-			err := conn.Update(func(tx *bolt.Tx) error {
+			// TODO and defer the call to wg.Done() to make sure we don't leak goroutines
+			if err := conn.Update(func(tx *bolt.Tx) error {
 				b := tx.Bucket([]byte(result.BucketName))
 				if b == nil {
-					// TODO Bucket does not exist
+					return fmt.Errorf("bucket %s does not exist", result.BucketName)
 				}
 				val, err := db.Ftob(result.Value)
-				// TODO error checking
-				err = b.Put([]byte(now), val)
-				return err
-			})
-			// TODO error checking
-			_ = err
+				if err != nil {
+					return err
+				}
+				return b.Put([]byte(now), val)
+			}); err != nil {
+				log.Println(err)
+			}
 
 			wg.Done()
 		}
