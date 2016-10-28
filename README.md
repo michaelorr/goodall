@@ -42,6 +42,14 @@ the tests on any OS/Architecture that is supported by Go, but you will need the
 Go runtime and environment setup to do so. See https://golang.org/doc/install
 for more information on how to get started.
 
+## API
+
+* TODO
+
+## JSON Body Spec
+
+* Todo
+
 ## Adding new Metrics
 
 To add a new metric, add an entry to BucketMap in `pkg/metrics/metrics.go`.
@@ -71,6 +79,9 @@ likely do not work fully due to lack of gopsutil support on Windows.
 
 ## Env Vars
 
+* `GOODALL_PORT`: This is the port to serve data from. If unspecified, the
+default value of `8080` is used. If the specified port is invalid, already in
+use or if goodall fails to bind to the port, the server will fail to start.
 * `GOODALL_COLLECTION_MS`: The collection interval expressed in milliseconds.
 If unspecified, or unparseable by https://golang.org/pkg/strconv/#Atoi the
 default value of `1000` is used.

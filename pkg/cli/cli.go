@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	HTTPPort		 int
 	MetricIntervalMs time.Duration
 	RetentionMin     time.Duration
 	DBPath           string
@@ -15,9 +16,20 @@ type Config struct {
 
 func parseArgs() *Config {
 	var c *Config = &Config{
+		// Defaults
+		HTTPPort:		  8080,
 		MetricIntervalMs: 1000 * time.Millisecond,
 		RetentionMin:     240 * time.Minute,
 		DBPath:           "goodall.db",
+	}
+
+	if os.Getenv("GOODALL_PORT") != "" {
+		port, err := strconv.Atoi(os.Getenv("GOODALL_PORT"))
+		if err != nil {
+			log.Println("Unable to parse env var GOODALL_PORT. Falling back to default (8080).")
+		} else {
+			c.HTTPPort = port
+		}
 	}
 
 	if os.Getenv("GOODALL_COLLECTION_MS") != "" {
