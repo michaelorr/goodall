@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	HTTPPort		 int
+	HTTPPort         int
 	MetricIntervalMs time.Duration
 	RetentionMin     time.Duration
 	DBPath           string
@@ -17,7 +17,7 @@ type Config struct {
 func parseArgs() *Config {
 	var c *Config = &Config{
 		// Defaults
-		HTTPPort:		  8080,
+		HTTPPort:         8080,
 		MetricIntervalMs: 1000 * time.Millisecond,
 		RetentionMin:     240 * time.Minute,
 		DBPath:           "goodall.db",

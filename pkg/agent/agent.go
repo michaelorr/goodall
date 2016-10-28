@@ -13,23 +13,12 @@ import (
 	"github.com/michaelorr/goodall/pkg/metrics"
 )
 
+// Would be more intelligent to somehow determine the timestamp of the earliest
+// entry rather than hardcoding something that is assumed to be in the past
 var cleanupKeyMin = []byte("2016-01-01T00:00:00Z")
 
-func Run(metricInterval, retentionPeriod time.Duration, path string, ret_val chan int) {
-	conn, err := db.Open(path)
-	if err != nil {
-		log.Println(err)
-		ret_val <- 1
-		return
-	}
-	err = db.Init(conn)
-	if err != nil {
-		log.Println(err)
-		ret_val <- 2
-		return
-	}
-
-	go GatherMetrics(conn, ret_val, metricInterval)
+func Run(conn *bolt.DB, metricInterval, retentionPeriod time.Duration) {
+	go GatherMetrics(conn, metricInterval)
 	go CleanupMetrics(conn, metricInterval, retentionPeriod)
 }
 
@@ -55,7 +44,7 @@ func CleanupMetrics(conn *bolt.DB, metricInterval, retentionPeriod time.Duration
 	}
 }
 
-func GatherMetrics(conn *bolt.DB, response chan int, metricInterval time.Duration) {
+func GatherMetrics(conn *bolt.DB, metricInterval time.Duration) {
 	for {
 		var wg sync.WaitGroup
 		now := time.Now().UTC().Format("2006-01-02T15:04:05.999")
