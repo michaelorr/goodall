@@ -66,14 +66,8 @@ likely do not work fully due to lack of gopsutil support on Windows.
 
 ## Error Response Codes
 
-### 0 - 9
-
 * 1: There was an error opening the database file
 * 2: There was a problem initializing the database buckets
-
-### 10-19
-
-* TODO
 
 ## Env Vars
 
