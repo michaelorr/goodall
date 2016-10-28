@@ -2,9 +2,15 @@ package cli
 
 import (
 	"github.com/michaelorr/goodall/pkg/agent"
+	"github.com/michaelorr/goodall/pkg/server"
 )
 
 func Run() int {
 	c := parseArgs()
-	return agent.Run(c.MetricIntervalMs, c.RetentionMin, c.DBPath)
+
+	ret_val := make(chan int)
+	go agent.Run(c.MetricIntervalMs, c.RetentionMin, c.DBPath, ret_val)
+	go server.Run(ret_val)
+
+	return <-ret_val
 }

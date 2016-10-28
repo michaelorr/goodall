@@ -15,22 +15,22 @@ import (
 
 var cleanupKeyMin = []byte("2016-01-01T00:00:00Z")
 
-func Run(metricInterval, retentionPeriod time.Duration, path string) int {
+func Run(metricInterval, retentionPeriod time.Duration, path string, ret_val chan int) {
 	conn, err := db.Open(path)
 	if err != nil {
 		log.Println(err)
-		return 1
+		ret_val <- 1
+		return
 	}
 	err = db.Init(conn)
 	if err != nil {
 		log.Println(err)
-		return 2
+		ret_val <- 2
+		return
 	}
 
-	response := make(chan int)
-	go GatherMetrics(conn, response, metricInterval)
+	go GatherMetrics(conn, ret_val, metricInterval)
 	go CleanupMetrics(conn, metricInterval, retentionPeriod)
-	return <-response
 }
 
 func CleanupMetrics(conn *bolt.DB, metricInterval, retentionPeriod time.Duration) {
