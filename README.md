@@ -75,12 +75,17 @@ likely do not work fully due to lack of gopsutil support on Windows.
 
 * TODO
 
-## CLI Params
+## Env Vars
 
-* TODO
-* Interval
-* DB filename
-* Data Cleanup
+* `GOODALL_COLLECTION_MS`: The collection interval expressed in milliseconds.
+If unspecified, or unparseable by https://golang.org/pkg/strconv/#Atoi the default value of `1000ms` is used.
+* `GOODALL_RETENTION_MIN`: The retention time period expressed in minutes.
+If unspecified, or unparseable by https://golang.org/pkg/strconv/#Atoi the default value of `40m` is used.
+* `GOODALL_DB_PATH`: This is the string filepath to the location of the db BoltDB file.
+If unspecified, the default of `goodall.db` is used. If the DB file does not exist when the service starts,
+the db file will be created.
+NOTE: No sanitization or validation is done on the path and it provides no fall-back if the provided path or
+parent directory exists but is un-writeable by the user.
 
 ## Resource Utilization
 
