@@ -87,6 +87,7 @@ default value of `40m` is used.
 BoltDB file.
 If unspecified, the default of `goodall.db` is used. If the DB file does not
 exist when the service starts, the db file will be created.
+
 NOTE: Goodall does not require the db file to exist but it does expect the
 parent dir to exist and be writeable by the user. No validation is done on the
 path and no fall-back is provided if the path or parent directory exists but is
