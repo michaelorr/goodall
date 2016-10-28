@@ -2,6 +2,7 @@ package agent
 
 import (
 	"bytes"
+	"log"
 	"sync"
 	"time"
 
@@ -16,10 +17,12 @@ var cleanupKeyMin = []byte("2016-01-01T00:00:00Z")
 func Run(metricInterval, retentionPeriod time.Duration, path string) int {
 	conn, err := db.Open(path)
 	if err != nil {
+		log.Println(err)
 		return 1
 	}
 	err = db.Init(conn)
 	if err != nil {
+		log.Println(err)
 		return 2
 	}
 
