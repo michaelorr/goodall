@@ -18,13 +18,13 @@ func LatestPayload(conn *bolt.DB) ([]byte, error) {
 		for metricName, _ := range metrics.BucketMap {
 			key_b, val_b := LatestFromBucket(tx, metricName)
 			if key_b == nil {
-				log.Println("Problem fetching from bucket %s", metricName)
+				log.Printf("Problem fetching from bucket %s\n", metricName)
 				continue
 			}
 
 			val_f, err := Btof(val_b)
 			if err != nil {
-				log.Printf("There was an error converting %s to float64", val_b)
+				log.Printf("There was an error converting %s to float64\n", val_b)
 				continue
 			}
 
@@ -91,7 +91,7 @@ func insertIntoPayload(metricSlice []metrics.JsonMetric, metricName string, key_
 
 	val_f, err := Btof(val_b)
 	if err != nil {
-		log.Printf("There was an error converting %s to float64", val_b)
+		log.Printf("There was an error converting %s to float64\n", val_b)
 		return metricSlice
 	}
 

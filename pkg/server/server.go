@@ -15,7 +15,7 @@ func Run(conn *bolt.DB, port int) {
 	http.HandleFunc("/latest", func(w http.ResponseWriter, r *http.Request) {
 		response, err := db.LatestPayload(conn)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -27,7 +27,7 @@ func Run(conn *bolt.DB, port int) {
 		http.HandleFunc(fmt.Sprintf("/%s", bucket), func(w http.ResponseWriter, r *http.Request) {
 			response, err := db.BucketPayload(conn, bucketName)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
