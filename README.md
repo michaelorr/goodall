@@ -44,11 +44,40 @@ for more information on how to get started.
 
 ## API
 
+* `/latest`: This end point will return a payload which contains one data entry
+per metric gathered. Each metric will be the most recent of its type.
 * TODO
 
 ## JSON Body Spec
 
-* TODO
+The JSON payload will consist of the following structure:
+
+```
+{
+    "Timestamp": "2016-10-29T05:04:16.395",
+    "Metrics": [
+        {
+            "Name": "system_load_15",
+            "Value": 1.89,
+            "Timestamp": "2016-10-29T05:04:11.513"
+        },
+        {
+            "Name": "system_load_5",
+            "Value": 1.76,
+            "Timestamp": "2016-10-29T05:04:11.513"
+        }
+        ...
+    ]
+}
+```
+
+There is a timestamp for the overall payload body which represents the time at
+which the payload was constructed and a series of metrics. Each metric contains
+a key which indicates what data is in the metric, the actual value for the
+metric, and the time at which that particular measurement was made.
+Regardless of the API endpoint that was used to fetch the JSON payload, the
+overall structure will be identical, but the contents will be tailored to suit
+the request.
 
 ## Adding new Metrics
 
