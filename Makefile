@@ -36,8 +36,6 @@ VERSION := 0.1.0
 ### These variables should not need tweaking.
 ###
 
-SRC_DIRS := cmd pkg # directories which hold app source (not vendored)
-
 ALL_ARCH := amd64 arm arm64 ppc64le
 
 BUILD_IMAGE ?= golang:1.7-alpine
@@ -93,7 +91,7 @@ test: build-dirs
 		$(BUILD_IMAGE)                                                     \
 		/bin/sh -c "                                                       \
 			VERBOSE=$(VERBOSE)											   \
-			./build/test.sh $(SRC_DIRS)                                    \
+			./build/test.sh               								   \
 		"
 
 build-dirs:

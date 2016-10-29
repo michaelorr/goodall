@@ -9,16 +9,16 @@
 
 ## What is this?
 
-TODO
-
-## Naming things is hard
-
-The name is derived from Jane Goodall, famed primatologist and anthropologist
-who became famous for her 55 year observational study of chimpanzees in
-Tanzania. Also, there is a trend of incorporting the letters `Go` in Go based
-projects ;-)
-
-> `https://www.wikiwand.com/en/Jane_Goodall`
+This is a metrics gathering and reporting system. The current implementation is
+designed such that it can easily monitor one system. It will gather data on the
+system and store it in a persistence layer provided by BoltDB
+(github.com/boltdb/bolt) and will serve that data up in JSON format over an
+http api. The api is described later in this document. The metrics that are
+gathered by default are also described later in this document but this list
+can easily be extended.
+A future design goal would be to extract the metric gathering agent and data
+reporting server into separate components so that they could be managed
+independently and metrics could be gathered across a cluster of machines.
 
 ## Building
 
@@ -27,7 +27,7 @@ to build your app, with the current directory volume-mounted into place.  This
 will store incremental state for the fastest possible build.  Run `make
 all-build` to build for all architectures.
 
-Run `make clean` to clean up.
+Run `make clean` to remove build artifacts.
 
 ## Testing
 
@@ -78,6 +78,19 @@ metric, and the time at which that particular measurement was made.
 Regardless of the API endpoint that was used to fetch the JSON payload, the
 overall structure will be identical, but the contents will be tailored to suit
 the request.
+
+## Default Metrics
+
+* `disk_used`
+* `disk_free`
+* `disk_total`
+* `mem_used`
+* `mem_available`
+* `mem_total`
+* `system_load_1`
+* `system_load_15`
+* `system_load_5`
+
 
 ## Adding new Metrics
 
@@ -136,6 +149,17 @@ metrics every 1s, store for 4h). Disk utilization by the database is roughly
 remains reasonably low. If the metric interval is increased to 1ms, the disk
 utilization will naturally increase dramatically as will CPU utilization, but
 overall resident memory usage will remain quite stable.
+
+* TODO fill out more detail here
+
+## Naming things is hard
+
+The name is derived from Jane Goodall, famed primatologist and anthropologist
+who became famous for her 55 year observational study of chimpanzees in
+Tanzania. Also, there is a trend of incorporting the letters `Go` in Go based
+projects ;-)
+
+> `https://www.wikiwand.com/en/Jane_Goodall`
 
 ## Wishlist
 
