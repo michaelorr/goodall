@@ -48,7 +48,7 @@ for more information on how to get started.
 
 ## JSON Body Spec
 
-* Todo
+* TODO
 
 ## Adding new Metrics
 

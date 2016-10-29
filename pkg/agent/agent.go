@@ -2,7 +2,6 @@ package agent
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -57,7 +56,12 @@ func GatherMetrics(conn *bolt.DB, metricInterval time.Duration) {
 			go fetchMetric(bucket, results, errors)
 		}
 
-		// TODO handle errors from metrics gathering
+		// log any errors from the metrics gathering
+		go func() {
+			for err := range errors {
+				log.Println(err)
+			}
+		}()
 
 		// wait until all metrics goroutines complete before continuing
 		go func() {
@@ -65,25 +69,9 @@ func GatherMetrics(conn *bolt.DB, metricInterval time.Duration) {
 			close(results)
 		}()
 
-		// gather the results
+		// gather and store the results
 		for result := range results {
-			// TODO do this in a separate goroutine in the connection package
-			// TODO and defer the call to wg.Done() to make sure we don't leak goroutines
-			if err := conn.Update(func(tx *bolt.Tx) error {
-				b := tx.Bucket([]byte(result.Name))
-				if b == nil {
-					return fmt.Errorf("bucket %s does not exist", result.Name)
-				}
-				val, err := db.Ftob(result.Value)
-				if err != nil {
-					return err
-				}
-				return b.Put([]byte(now), val)
-			}); err != nil {
-				log.Println(err)
-			}
-
-			wg.Done()
+			go db.Store(conn, result, now, wg)
 		}
 
 		time.Sleep(metricInterval)

@@ -10,12 +10,16 @@ import (
 	"github.com/michaelorr/goodall/pkg/db"
 )
 
-func Run(conn *bolt.DB, port int, ret_val chan int) {
-	// TODO make sure we need ret_val
-
+func Run(conn *bolt.DB, port int) {
 	http.HandleFunc("/latest", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Serving a request on /latest")
-		fmt.Fprintf(w, "%s", db.LatestPayload(conn))
+		response, err := db.LatestPayload(conn)
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		fmt.Fprintf(w, "%s", response)
 	})
 
 	log.Printf("listening on http://127.0.0.1:%d/\n", port)

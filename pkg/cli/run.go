@@ -22,9 +22,8 @@ func Run() int {
 		return 2
 	}
 
-	ret_val := make(chan int)
 	go agent.Run(conn, c.MetricIntervalMs, c.RetentionMin)
-	go server.Run(conn, c.HTTPPort, ret_val)
+	go server.Run(conn, c.HTTPPort)
 
 	return <-ret_val
 }
