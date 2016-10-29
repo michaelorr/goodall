@@ -39,7 +39,7 @@ func LatestPayload(conn *bolt.DB) ([]byte, error) {
 		return nil
 	})
 
-	response := metrics.JsonPayload{time.Now().String(), metricSlice}
+	response := metrics.JsonPayload{time.Now().UTC().Format("2006-01-02T15:04:05.999"), metricSlice}
 	return json.Marshal(response)
 }
 
