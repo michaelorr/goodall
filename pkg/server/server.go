@@ -12,7 +12,6 @@ import (
 
 func Run(conn *bolt.DB, port int) {
 	http.HandleFunc("/latest", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Serving a request on /latest")
 		response, err := db.LatestPayload(conn)
 		if err != nil {
 			fmt.Println(err)
