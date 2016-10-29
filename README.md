@@ -56,9 +56,9 @@ To add a new metric, add an entry to BucketMap in `pkg/metrics/metrics.go`.
 This map is of the form `"key": value` where `key` is a string and `value` is a
 function with the signature `func(string, chan *DataPoint, chan error)`. The
 function should send along the channel a pointer to an instance of
-metrics.Datapoint which contains the BucketName that was passed in and the
-result value that should be stored in the db. This method will be called every
-metrics.Interval which is an instance of time.Duration.
+metrics.Datapoint which contains the Name if the bucket that was passed in and
+the result value that should be stored in the db. This method will be called
+every metrics.Interval which is an instance of time.Duration.
 
 Goodall depends on https://github.com/shirou/gopsutil for gathering system
 metrics. This library can read environment variable if the location of `/proc`

@@ -1,15 +1,16 @@
 package db
 
 import (
-	"fmt"
+	"encoding/json"
+	"time"
 
 	"github.com/boltdb/bolt"
 
 	"github.com/michaelorr/goodall/pkg/metrics"
 )
 
-func LatestPayload(conn *bolt.DB) string {
-	var response string
+func LatestPayload(conn *bolt.DB) []byte {
+	metricSlice := make([]metrics.JsonMetric, 0)
 
 	conn.View(func(tx *bolt.Tx) error {
 		for metricName, _ := range metrics.BucketMap {
@@ -17,14 +18,22 @@ func LatestPayload(conn *bolt.DB) string {
 			// TODO handle errors
 			val_f, _ := Btof(val_b)
 
-			// TODO create a struct a Marshall to json
-			response = fmt.Sprintf("%s\n%s\t%f\t%s", response, metricName, val_f, string(key_b))
+			data := metrics.JsonMetric{
+				DataPoint: metrics.DataPoint{
+					Name: metricName,
+					Value: val_f,
+				},
+				Timestamp: string(key_b),
+			}
+			metricSlice = append(metricSlice, data)
 		}
-
 		return nil
 	})
 
-	return response
+	response := metrics.JsonPayload{time.Now().String(), metricSlice}
+	r, _ := json.Marshal(response)
+	// TODO error checking
+	return r
 }
 
 func LatestFromBucket(tx *bolt.Tx, bucketName string) ([]byte, []byte) {

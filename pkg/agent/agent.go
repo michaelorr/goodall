@@ -70,9 +70,9 @@ func GatherMetrics(conn *bolt.DB, metricInterval time.Duration) {
 			// TODO do this in a separate goroutine in the connection package
 			// TODO and defer the call to wg.Done() to make sure we don't leak goroutines
 			if err := conn.Update(func(tx *bolt.Tx) error {
-				b := tx.Bucket([]byte(result.BucketName))
+				b := tx.Bucket([]byte(result.Name))
 				if b == nil {
-					return fmt.Errorf("bucket %s does not exist", result.BucketName)
+					return fmt.Errorf("bucket %s does not exist", result.Name)
 				}
 				val, err := db.Ftob(result.Value)
 				if err != nil {

@@ -7,8 +7,18 @@ import (
 )
 
 type DataPoint struct {
-	BucketName string
+	Name		string
 	Value      float64
+}
+
+type JsonMetric struct {
+	DataPoint
+	Timestamp string
+}
+
+type JsonPayload struct {
+	Timestamp string
+	Metrics  []JsonMetric
 }
 
 type metricF func(string, chan *DataPoint, chan error)
