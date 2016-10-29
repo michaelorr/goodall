@@ -110,7 +110,7 @@ metrics that can be easily added.
 
 ## Notes
 
-* Only the amd64/darwin and amd64/linux have been tested.
+* Only amd64/darwin and amd64/linux have been tested.
 * Other OSs and ARCHs may build successfully but have not been tested and
 likely do not work fully due to lack of gopsutil support on Windows.
 
