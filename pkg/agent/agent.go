@@ -71,7 +71,7 @@ func GatherMetrics(conn *bolt.DB, metricInterval time.Duration) {
 
 		// gather and store the results
 		for result := range results {
-			go db.Store(conn, result, now, wg)
+			go db.Store(conn, result, now, &wg)
 		}
 
 		time.Sleep(metricInterval)

@@ -10,7 +10,7 @@ import (
 	"github.com/michaelorr/goodall/pkg/metrics"
 )
 
-func Store(conn *bolt.DB, result *metrics.DataPoint, now string, wg sync.WaitGroup) {
+func Store(conn *bolt.DB, result *metrics.DataPoint, now string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	if err := conn.Update(func(tx *bolt.Tx) error {
