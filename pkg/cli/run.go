@@ -25,5 +25,5 @@ func Run() int {
 	go agent.Run(conn, c.MetricIntervalMs, c.RetentionMin)
 	go server.Run(conn, c.HTTPPort)
 
-	return <-ret_val
+	select {} // Block forever
 }
