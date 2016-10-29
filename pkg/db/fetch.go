@@ -45,7 +45,9 @@ func LatestPayload(conn *bolt.DB) ([]byte, error) {
 
 func LatestFromBucket(tx *bolt.Tx, bucketName string) ([]byte, []byte) {
 	b := tx.Bucket([]byte(bucketName))
-	// TODO error and nil handling here
+	if b == nil {
+		return nil, nil
+	}
 	c := b.Cursor()
 	return c.Last()
 }
