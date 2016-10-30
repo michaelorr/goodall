@@ -19,7 +19,11 @@ func Store(conn *bolt.DB, result *metrics.DataPoint, now string, wg *sync.WaitGr
 			return fmt.Errorf("bucket %s does not exist", result.Name)
 		}
 
-		return b.Put([]byte(now), Ftob(result.Value))
+        val, err := Ftob(result.Value)
+        if err != nil {
+            return err
+        }
+        return b.Put([]byte(now), val)
 	}); err != nil {
 		log.Println(err)
 	}

@@ -1,8 +1,8 @@
 package db
 
 import (
+	"bytes"
 	"encoding/binary"
-	"math"
 	"time"
 
 	"github.com/boltdb/bolt"
@@ -27,15 +27,21 @@ func Init(conn *bolt.DB) error {
 	return nil
 }
 
-func Ftob(f float64) []byte {
-	bits := math.Float64bits(f)
-	bytes := make([]byte, 8)
-	binary.BigEndian.PutUint64(bytes, bits)
-	return bytes
+func Ftob(f float64) ([]byte, error) {
+	buf := new(bytes.Buffer)
+	err := binary.Write(buf, binary.BigEndian, f)
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }
 
-func Btof(b []byte) float64 {
-	bits := binary.LittleEndian.Uint64(b)
-	float := math.Float64frombits(bits)
-	return float
+func Btof(b []byte) (float64, error) {
+	var f float64
+	buf := bytes.NewReader(b)
+	err := binary.Read(buf, binary.BigEndian, &f)
+	if err != nil {
+		return f, err
+	}
+	return f, nil
 }
