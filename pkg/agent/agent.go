@@ -44,24 +44,25 @@ func CleanupMetrics(conn *bolt.DB, metricInterval, retentionPeriod time.Duration
 }
 
 func GatherMetrics(conn *bolt.DB, metricInterval time.Duration) {
+	errors := make(chan error)
+
+	// log any errors from the metrics gathering
+	go func() {
+		for err := range errors {
+			log.Println(err)
+		}
+	}()
+
+	var wg sync.WaitGroup
 	for {
-		var wg sync.WaitGroup
 		now := time.Now().UTC().Format("2006-01-02T15:04:05.999")
 		results := make(chan *metrics.DataPoint, len(metrics.BucketMap))
-		errors := make(chan error)
 
 		// spin off goroutines to fetch each metric
 		for bucket, fetchMetric := range metrics.BucketMap {
 			wg.Add(1)
 			go fetchMetric(bucket, results, errors)
 		}
-
-		// log any errors from the metrics gathering
-		go func() {
-			for err := range errors {
-				log.Println(err)
-			}
-		}()
 
 		// wait until all metrics goroutines complete before continuing
 		go func() {
@@ -71,7 +72,7 @@ func GatherMetrics(conn *bolt.DB, metricInterval time.Duration) {
 
 		// gather and store the results
 		for result := range results {
-			go db.Store(conn, result, now, &wg)
+			db.Store(conn, result, now, &wg)
 		}
 
 		time.Sleep(metricInterval)

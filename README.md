@@ -116,8 +116,8 @@ likely do not work fully due to lack of gopsutil support on Windows.
 
 ## Error Response Codes
 
-* 1: There was an error opening the database file
-* 2: There was a problem initializing the database buckets
+* `1`: There was an error opening the database file
+* `2`: There was a problem initializing the database buckets
 
 ## Env Vars
 
