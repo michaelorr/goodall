@@ -46,7 +46,9 @@ for more information on how to get started.
 
 * `/latest`: This end point will return a payload which contains one data entry
 per metric gathered. Each metric will be the most recent of its type.
-* TODO
+* There is also an endpoint for each named metric, i.e. `/disk_used`,
+`/mem_total`, etc. These endpoints return the 10 most recent entries for this
+metric type.
 
 ## JSON Body Spec
 
@@ -91,6 +93,9 @@ the request.
 * `system_load_15`
 * `system_load_5`
 
+The default metrics are provided by gopsutil
+(https://godoc.org/github.com/shirou/gopsutil). More details can be found in
+the documentation for that project.
 
 ## Adding new Metrics
 
@@ -142,15 +147,46 @@ un-writeable by the user or if the directory path does not exist.
 
 ## Resource Utilization
 
-If this tool is intended to monitor resources, it shouldn't be resource heavy
-itself. I've measured steady state usage with default configuration (gather
-metrics every 1s, store for 4h). Disk utilization by the database is roughly
-25M with steady state usage of 6-7M resident memory while CPU utilization
-remains reasonably low. If the metric interval is increased to 1ms, the disk
-utilization will naturally increase dramatically as will CPU utilization, but
-overall resident memory usage will remain quite stable.
+I've measured steady state usage with default configuration (gather metrics
+every 1s, store for 4h). Disk utilization by the database is roughly 25MB while
+CPU utilization remains reasonably low (fluctuations between 0% and momentary
+blips of 5%). If the metric collection interval is increased, the disk
+utilization will naturally increase as will CPU utilization. This will also
+worsen the memory leak (see Known Issues). Increasing the retention period will
+naturally have a linear relationship with disk usage by the DB.
 
-* TODO fill out more detail here
+## Benchmarks
+
+While these benchmarks are purely anecodtal, they are an indicator of the
+responsiveness that is possible with Goodall. I used ab
+(https://linux.die.net/man/1/ab) which indicated that typical response times
+were often in the neighborhood of 5-20ms with occasional outliers taking 3-10s
+and typical concurrency on the order of 500-1500 req/sec (mean).
+
+These measurements were taken while conducting various experiments of 5-100
+concurrent requests and ranging from 5000 to 30000 total requests.
+
+The following data was taken with 20 concurrent and 10000 total requests:
+```
+Concurrency Level:      20
+Time taken for tests:   4.805 seconds
+Complete requests:      10000
+Failed requests:        0
+
+Requests per second:    781.35 [#/sec] (mean)
+Time per request:       9.609 [ms] (mean)
+
+Percentage of the requests served within a certain time (ms)
+    50%      4
+    66%      4
+    75%      5
+    80%      5
+    90%      6
+    95%      8
+    98%     13
+    99%     20
+   100%  13164 (longest request)
+```
 
 ## Naming things is hard
 
@@ -160,6 +196,15 @@ Tanzania. Also, there is a trend of incorporting the letters `Go` in Go based
 projects ;-)
 
 > `https://www.wikiwand.com/en/Jane_Goodall`
+
+## Known Issues
+
+There is a slow memory leak in the metric collection portion of code. I have
+been unable to track it down precisely but it is made worse when the collection
+period is increased. For this reason, it is not recommended to run Goodall with
+a sub-second collection for any lengthy period of time. Running with the
+default value of collecting metrics once per second for 1 hour, ram utilization
+was ~10MB but after ~12 hours it was close to 100MB of ram. Not good.
 
 ## Wishlist
 
