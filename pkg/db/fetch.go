@@ -22,16 +22,10 @@ func LatestPayload(conn *bolt.DB) ([]byte, error) {
 				continue
 			}
 
-			val_f, err := Btof(val_b)
-			if err != nil {
-				log.Printf("There was an error converting %s to float64\n", val_b)
-				continue
-			}
-
 			data := metrics.JsonMetric{
 				DataPoint: metrics.DataPoint{
 					Name:  metricName,
-					Value: val_f,
+					Value: Btof(val_b),
 				},
 				Timestamp: string(key_b),
 			}
@@ -89,16 +83,10 @@ func insertIntoPayload(metricSlice []metrics.JsonMetric, metricName string, key_
 		return metricSlice
 	}
 
-	val_f, err := Btof(val_b)
-	if err != nil {
-		log.Printf("There was an error converting %s to float64\n", val_b)
-		return metricSlice
-	}
-
 	data := metrics.JsonMetric{
 		DataPoint: metrics.DataPoint{
 			Name:  metricName,
-			Value: val_f,
+			Value: Btof(val_b),
 		},
 		Timestamp: string(key_b),
 	}
