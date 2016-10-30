@@ -42,6 +42,10 @@ the tests on any OS/Architecture that is supported by Go, but you will need the
 Go runtime and environment setup to do so. See https://golang.org/doc/install
 for more information on how to get started.
 
+NOTE: Sadly the test suite is currently non-existent. Running the make target
+for the tests will still perform the `go fmt` and `go vet` checks but
+unfortunately my recent efforts have been focused on finding the memory leak.
+
 ## API
 
 * `/latest`: This end point will return a payload which contains one data entry
