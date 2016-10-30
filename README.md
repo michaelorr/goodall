@@ -7,6 +7,10 @@
 
 # Metrics gathering and reporting
 
+## Releases
+
+[v0.1](https://github.com/michaelorr/goodall/releases/tag/v0.1-beta)
+
 ## What is this?
 
 This is a metrics gathering and reporting system. The current implementation is
